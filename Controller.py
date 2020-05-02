@@ -1,5 +1,5 @@
 import telebot
-from Config import Carma, max_number_clients, bot, Number, queue, Shops, choose_shop, Users, myQueue, Chat_shops, Chat_clients, flag, type_user, user_login
+from QueueBot.Config import Carma, max_number_clients, bot, Number, queue, Shops, choose_shop, Users, myQueue, Chat_shops, Chat_clients, flag, type_user, user_login
 
 
 def send_text_controller(message):

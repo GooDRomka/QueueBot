@@ -1,24 +1,5 @@
-import telebot
-
-# from telebot import apihelper
-# apihelper.proxy = {'https':'socks5://userproxy:password@proxy_address:port'}
-import numpy as np
-
-from Config import (
-    bot,
-    Number,
-    queue,
-    Shops,
-    choose_shop,
-    Users,
-    myQueue,
-    Chat_shops,
-    Chat_clients,
-    flag,
-    type_user,
-    user_login,
-)
-from Controller import (
+from QueueBot.Config import bot
+from QueueBot.Controller import (
     send_text_controller,
     start_message_controller,
     help_message_controller,
