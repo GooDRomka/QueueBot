@@ -19,7 +19,7 @@ def send_text_controller(message):
     saveState()
 
 def start_message_controller(message):
-    global  userList, shopList
+    global userList, shopList
     user = User(message.from_user)
     userList[message.chat.id] = user
     userList[message.chat.id].flag = "start"
