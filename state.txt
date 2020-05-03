@@ -1,0 +1,6 @@
+
+
+
+shopList = {"135255116": {"id": 135255116, "name": "\u0411\u0430\u0440\u0431\u0435\u0440\u0428\u043e\u043f \u0420\u043e\u043c\u044b", "queue": [135255116]}}
+userList = {"135255116": {"id": 135255116, "flag": "wait_choise", "user_login": "Dudeisme", "type_user": "shop", "myQueue": {"135255116": 1}}}
+shopNames =[]

@@ -4,3 +4,11 @@ class Shop:
         # self.holder = message.chat.id
         self.name = name
         self.queue = []
+
+    def _asdict(self):
+        return self.__dict__
+
+
+    id = ""
+    name = ""
+    queue = []

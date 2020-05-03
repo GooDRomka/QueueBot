@@ -1,20 +1,22 @@
 import telebot
-from QueueBot.Config import Carma, max_number_clients, bot, queue, shopList, userList, shopNames
+from QueueBot.Config import  bot, userList, shopList,shopNames
 from QueueBot.User import User
 from QueueBot.Shop import Shop
+import simplejson
 
 def send_text_controller(message):
     Comands = {"встать в очередь": "get_talon", "отменить запись": "cancel_talon", "какой я в очереди": "my_position",
                "выйти": "exit","cписок магазинов":"show_shop_list","изменить имя магазина":"set_shop_name",
                "позвать следующего": "next_client", "первые 3 клиента": "head_queue", "очистить очередь": "clean_queue",
-               "удалить магазин": "delete_shop", "Вернуться" : "home", "поменять название" : "print_new_shop_name"
+               "удалить магазин": "delete_shop", "вернуться" : "home", "поменять название" : "print_new_shop_name"
                }
+
     if message.text.lower() in Comands:
         userList[message.chat.id].flag = Comands[message.text.lower()]
-    print(f"До ответа flag :{userList[message.chat.id].flag} message:{message.text} userList: {userList} shopList:{shopList} queue:{queue} myQueue:{userList[message.chat.id].myQueue}")
+    print(f"До ответа flag :{userList[message.chat.id].flag} message:{message.text} userList: {userList} shopList:{shopList}  myQueue:{userList[message.chat.id].myQueue}")
     userList[message.chat.id].flag = answer_maker(message.chat.id, message.text)
-    print(f"После ответа flag :{userList[message.chat.id].flag} message:{message.text}  userList: {userList} shopList:{shopList} queue:{queue} myQueue:{userList[message.chat.id].myQueue}")
-
+    print(f"После ответа flag :{userList[message.chat.id].flag} message:{message.text}  userList: {userList} shopList:{shopList}  myQueue:{userList[message.chat.id].myQueue}")
+    saveState()
 
 def start_message_controller(message):
     global  userList, shopList
@@ -38,15 +40,14 @@ def client_answer_maker(_id,message = None):
             keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True)
             keyboard1.row("Cписок магазинов","Встать в очередь", "Отменить запись", "Какой я в очереди", "Выйти")
             bot.send_message(_id, "Выбери действие", reply_markup=keyboard1)
+            return "wait_choise"
         if userList[_id].flag == "get_talon":
             bot.send_message(_id, "Выбери магазин в котором встать в очередь\n")
             printShopList(_id)
             return "wait_shop_num"
         if userList[_id].flag == "wait_shop_num":
             try:
-
                 num = int(message)
-
                 return addToQueue(_id, num - 1)
             except Exception as e:
                 print("numer_error")
@@ -78,6 +79,7 @@ def shop_answer_maker(_id, message = None):
             keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True)
             keyboard1.row("Позвать следующего", "Первые 3 клиента", "Изменить имя магазина", "Выйти")
             bot.send_message(_id, "Выбери действие", reply_markup=keyboard1)
+            return "wait_choise"
         if userList[_id].flag == "next_client":
             if len(shopList[_id].queue) == 0:
                 bot.send_message(_id,"Очередь пустая")
@@ -122,14 +124,14 @@ def shop_answer_maker(_id, message = None):
                 shopList[_id].name = message
                 bot.send_message(_id,f"Ваш магазин теперь называется {message}")
                 userList[_id].flag = "home"
-                return answer_maker(_id,"")
+                return answer_maker(_id, "")
     except Exception as e:
         print("shop_answer_maker_error")
         bot.send_message(_id, "Попробуй выполнить команду еще раз")
         return userList[_id].flag
 
 def answer_maker(_id, message=None):
-    global  userList, shopList,queue
+    global  userList, shopList
     try:
         if userList[_id].flag == "start":
             keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True)
@@ -140,19 +142,27 @@ def answer_maker(_id, message=None):
             userList[_id].type_user = ""
             userList[_id].flag = "start"
             return answer_maker(_id,"")
+        if userList[_id].flag == "wait_shop_name":
+            shopList[_id] = Shop(_id, message)
+            userList[_id].type_user = "shop"
+            userList[_id].flag = "home"
+            bot.send_message(_id, f"Поздравляю, вы открыли свой магазин {message}")
+            return answer_maker(_id, "")
         if userList[_id].flag == "wait_type":
             if message.lower() == "клиент":
-                if _id not in userList:
+                if _id not in userList.keys():
                     userList.append(_id)
                     userList[_id].myQueue = {}
                 userList[_id].type_user = "client"
                 userList[_id].flag = "home"
                 return answer_maker(_id, message)
             elif message.lower() == "магазин":
-                if _id not in shopList:
-                    shopList[_id] = Shop(_id, _id)
-                    queue[_id] = []
+                if _id not in shopList.keys():
+                    bot.send_message(_id,f"Создаем Ваш магазин...")
+                    bot.send_message(_id,f"Введите название")
+                    return "wait_shop_name"
                 userList[_id].type_user = "shop"
+                bot.send_message(_id,f"Вы вошли в свой магазин {shopList[_id].name}")
                 userList[_id].flag = "home"
                 return answer_maker(_id, message)
             else:
@@ -248,7 +258,12 @@ def decreaseClients(id,n):
     for us_id, user_param in userList.items():
         if id in user_param.myQueue.keys():
             user_param.myQueue[id]-=n
-
+def saveState():
+    global  userList, shopList, shopNames
+    f = open('state.txt', 'w')
+    mes = f"\n\n\nshopList = {simplejson.dumps(shopList)}\nuserList = {simplejson.dumps(userList)}\nshopNames ={shopNames}\n"
+    f.write(mes)
+    f.close()
 def headQueue(_id,n):
     global  userList, shopList, queue
     mes = ""
