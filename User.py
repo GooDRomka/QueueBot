@@ -6,11 +6,10 @@ class User:
         self.user_login = message.username
         self.type_user = ''
         self.myQueue = {}
+        self.memory = ""
 
     def _asdict(self):
         return self.__dict__
-
-
     id = ""
     flag = ""
     user_login = ""
