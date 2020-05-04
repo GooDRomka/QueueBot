@@ -1,5 +1,5 @@
 import telebot
-from QueueBot.Config import  bot, userList, shopList,shopNames,quickTalon
+from QueueBot.Config import bot, userList, shopList,shopNames, quickTalon
 from QueueBot.User import User
 from QueueBot.Shop import Shop
 import simplejson
@@ -13,7 +13,7 @@ def send_text_controller(message):
                "активировать магазин": "admin_active_shop", "удалить магазин": "admin_del_shop",
                "восстановить данные": "abmin_restart_data"
                }
-
+    print(message)
     if message.text.lower() in Comands:
         userList[message.chat.id].flag = Comands[message.text.lower()]
     print(f"До ответа flag :{userList[message.chat.id].flag} message:{message.text} userList: {userList} shopList:{shopList}  myQueue:{userList[message.chat.id].myQueue}")
@@ -38,7 +38,7 @@ def client_answer_maker(_id,message = None):
         if userList[_id].flag == "show_shop_list":
             printShopList(_id)
             userList[_id].flag = "home"
-            return answer_maker(_id,"")
+            return answer_maker(_id, "")
         if userList[_id].flag == "home":
             keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True)
             keyboard1.row("Cписок магазинов", "Встать в очередь", "Какой я в очереди")
@@ -154,9 +154,9 @@ def shop_answer_maker(_id, message = None):
         return userList[_id].flag
 
 def answer_maker(_id, message=None):
-    global  userList, shopList
+    global userList, shopList
     try:
-        if  userList[_id].flag == "admin":
+        if userList[_id].flag == "admin":
             if _id not in userList.keys():
                     userList.append(_id)
                     userList[_id].myQueue = {}
@@ -189,8 +189,8 @@ def answer_maker(_id, message=None):
                 return answer_maker(_id, message)
             elif message.lower() == "магазин":
                 if _id not in shopList.keys():
-                    bot.send_message(_id,f"Создаем Ваш магазин...")
-                    bot.send_message(_id,f"Введите название")
+                    bot.send_message(_id, f"Создаем Ваш магазин...")
+                    bot.send_message(_id, f"Введите название")
                     return "wait_shop_name"
                 userList[_id].type_user = "shop"
                 bot.send_message(_id,f"Вы вошли в свой магазин {shopList[_id].name}")
@@ -437,3 +437,10 @@ def activeShop(id):
     else:
         shopList[shop_id].isActive = True
         return True
+
+def newUser(message):
+    if message.id not in userList.keys():
+        print(f"Добавлен новый пользлователь {message.id}")
+        user = User(message)
+        userList[message.id] = user
+        userList[message.id].flag = "start"
