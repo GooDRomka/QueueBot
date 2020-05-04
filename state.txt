@@ -1,0 +1,6 @@
+
+
+
+shopList = {}
+userList = {"135255116": {"id": 135255116, "flag": "wait_choise", "user_login": "Dudeisme", "type_user": "admin", "myQueue": {}, "memory": 135255116}}
+shopNames =[]
