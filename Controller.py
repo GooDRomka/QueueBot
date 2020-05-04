@@ -8,7 +8,7 @@ def send_text_controller(message):
     Comands = {"встать в очередь": "get_talon", "отменить запись": "cancel_talon", "какой я в очереди": "my_position",
                "выйти": "exit", "cписок магазинов":"show_shop_list","изменить название магазина":"set_shop_name",
                "позвать следующего": "next_client", "первые 3 клиента": "head_queue", "очистить очередь": "clean_queue",
-                "вернуться": "home", "поменять название" : "print_new_shop_name",
+                "вернуться" : "home", "поменять название" : "print_new_shop_name",
                "быстрая запись": "quick_talon_message", "ввести талон":"quick_talon_wait", "admin": "admin",
                "активировать магазин": "admin_active_shop", "удалить магазин": "admin_del_shop",
                "восстановить данные": "abmin_restart_data"
@@ -314,10 +314,12 @@ def addToQueue(id, num_in_shopList = None, shop_id = None):
         print(f"я тут 1 {num_in_shopList}")
         for g_id, shop_json in shopList.items():
             if shop_json.isActive:
+                print(f"я тут 2 {j}")
                 j += 1
             if j - 1 == num_in_shopList:
+                print(f"я тут 3 {j} {g_id}")
                 shop_id = g_id
-            j += 1
+
 
     if shop_id in userList[id].myQueue.keys():
         bot.send_message(id, f"Вы уже были добавлены в {shopList[shop_id].name}, Ваш номер {userList[id].myQueue[shop_id]}")
@@ -354,10 +356,11 @@ def delTalonByNumber(id,number):
     return answer_maker(id,"")
 
 def printShopList(id):
-    global  userList, shopList
+    global userList, shopList
     j = 0
     mes = ""
     for shop_id, shopObject in shopList.items():
+        print(f"я сломался 1 {shopObject}")
         if shopObject.isActive:
             j += 1
             mes = mes + f"{j}: {shopObject.name}\n"
@@ -400,11 +403,11 @@ def decreaseClients(id, n):
             user_param.myQueue[id]-=n
 
 def saveState():
-    global  userList, shopList, shopNames
-    f = open('Config.py', 'w')
+    global userList, shopList, shopNames
+    f = open('state.txt', 'w')
     mes = "import telebot\n#bot = telebot.TeleBot('1086481184:AAE0h7NBROzRO7Ke2QmTd7qPOYGy3WTMCM0')\nbot = telebot.TeleBot('1234407671:AAEKcRhsafPOVfIwNRLP1oU69rJ8xly6ZtE')\n"
     mes = mes + f"shopList = {simplejson.dumps(shopList)}\nuserList = {simplejson.dumps(userList)}\nshopNames ={shopNames}\nquickTalon = {quickTalon}"
-    f.write(mes.replace('true', 'True').replace('false', 'False'))
+    f.write(mes.replace('true', 'True').replace('false', 'False').replace('null', 'None'))
     f.close()
 def headQueue(_id,n):
     global  userList, shopList, queue
@@ -416,7 +419,7 @@ def headQueue(_id,n):
         if i>=len(shopList[_id].queue):
             return i, mes
         if shopList[_id].queue[i]:
-            mes+=f"{i}. {userList[shopList[_id].queue[i]].user_login}\n"
+            mes+=f"{i+1}. {userList[shopList[_id].queue[i]].user_login}\n"
     return n, mes
 def adminShopList():
     global  userList, shopList, shopNames
