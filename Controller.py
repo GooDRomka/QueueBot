@@ -48,13 +48,17 @@ def client_answer_maker(_id,message = None):
         if userList[_id].flag == "get_talon":
             bool = printShopList(_id)
             if bool:
-                bot.send_message(_id, "Выбери магазин в котором встать в очередь\n")
+                keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True)
+                keyboard1.row("1", "2", "3")
+                keyboard1.row("4", "5", "6")
+                keyboard1.row("7", "8", "9")
+                bot.send_message(_id, "Выбери магазин в котором встать в очередь\n", reply_markup=keyboard1)
                 return "wait_shop_num"
             else:
                 userList[_id].flag = "home"
                 return answer_maker(_id, "")
         if userList[_id].flag == "quick_talon_message":
-            bot.send_message(_id,"Введите ваш талон")
+            bot.send_message(_id, "Введите ваш талон")
             return "quick_talon_wait"
         if userList[_id].flag == "quick_talon_wait":
             shop_id = get_key(quickTalon, int(message))
@@ -74,7 +78,11 @@ def client_answer_maker(_id,message = None):
             except Exception as e:
                 print("numer_error")
                 bot.send_message(_id, "Введите корректный номер")
-                bot.send_message(_id, "Выбери магазин в котором встать в очередь\n")
+                keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True)
+                keyboard1.row("1", "2", "3")
+                keyboard1.row("4", "5", "6")
+                keyboard1.row("7", "8", "9")
+                bot.send_message(_id, "Выбери магазин в котором встать в очередь\n", reply_markup=keyboard1)
                 printShopList(_id)
                 return "wait_shop_num"
         if userList[_id].flag == "cancel_talon":
@@ -83,7 +91,11 @@ def client_answer_maker(_id,message = None):
                 userList[_id].flag = "home"
                 return answer_maker(_id,message)
             else:
-                bot.send_message(_id,f"Выбери какой талон отменить\n{printMyTalons(_id)}")
+                keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True)
+                keyboard1.row("1", "2", "3")
+                keyboard1.row("4", "5", "6")
+                keyboard1.row("7", "8", "9")
+                bot.send_message(_id, f"Выбери какой талон отменить\n{printMyTalons(_id)}", reply_markup=keyboard1)
                 return "wait_talon_del"
         if userList[_id].flag =="wait_talon_del":
             return delTalonByNumber(_id,message)
@@ -95,7 +107,7 @@ def client_answer_maker(_id,message = None):
         return userList[_id].flag
 
 def shop_answer_maker(_id, message = None):
-    global  userList, shopList, shopNames
+    global userList, shopList, shopNames
     try:
         if userList[_id].flag == "home":
             keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True)
@@ -389,9 +401,10 @@ def decreaseClients(id, n):
 
 def saveState():
     global  userList, shopList, shopNames
-    f = open('state.txt', 'w')
-    mes = f"\n\n\nshopList = {simplejson.dumps(shopList)}\nuserList = {simplejson.dumps(userList)}\nshopNames ={shopNames}\n"
-    f.write(mes)
+    f = open('Config.py', 'w')
+    mes = "import telebot\n#bot = telebot.TeleBot('1086481184:AAE0h7NBROzRO7Ke2QmTd7qPOYGy3WTMCM0')\nbot = telebot.TeleBot('1234407671:AAEKcRhsafPOVfIwNRLP1oU69rJ8xly6ZtE')\n"
+    mes = mes + f"shopList = {simplejson.dumps(shopList)}\nuserList = {simplejson.dumps(userList)}\nshopNames ={shopNames}\nquickTalon = {quickTalon}"
+    f.write(mes.replace('true', 'True').replace('false', 'False'))
     f.close()
 def headQueue(_id,n):
     global  userList, shopList, queue
@@ -444,3 +457,5 @@ def newUser(message):
         user = User(message)
         userList[message.id] = user
         userList[message.id].flag = "start"
+
+# def uploadDataFromFile():
