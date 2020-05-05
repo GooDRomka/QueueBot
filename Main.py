@@ -1,7 +1,10 @@
 
 from QueueBot.Controller import     send_text_controller, start_message_controller, help_message_controller, newUser, uploadDataFromFile
 from QueueBot.Config import bot
-uploadDataFromFile()
+try:
+    uploadDataFromFile()
+except Exception as e:
+    print("Ошибка восстановления данных")
 
 @bot.message_handler(commands=["help"])
 def help_message(message):

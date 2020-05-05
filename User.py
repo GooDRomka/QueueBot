@@ -16,6 +16,8 @@ class User:
         self.myQueue = {}
         self.memory = ""
         print(f"\n\nДобавлен новый пользлователь id: {self.id} name:{self.user_login}\n\n")
+    def __repr__(self):
+        return "User id:% s name:% s type:% s flag:% s queue:% s" % (self.id, self.user_login, self.type_user, self.flag, self.myQueue)
     def _asdict(self):
         return self.__dict__
     id = ""
