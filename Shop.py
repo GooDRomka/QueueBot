@@ -9,6 +9,7 @@ class Shop:
         else:
             self.talon = talon
         self.isActive = isActive
+        print(f"\n\n\nДобавлен новый магазин id: {self.id} name:{self.name}\n\n\n")
     def _asdict(self):
         return self.__dict__
 

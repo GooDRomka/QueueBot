@@ -2,6 +2,7 @@ import telebot
 from QueueBot.Config import bot, userList, shopList,shopNames, quickTalon
 from QueueBot.User import User
 from QueueBot.Shop import Shop
+import pickle
 import simplejson
 
 def send_text_controller(message):
@@ -232,7 +233,7 @@ def admin_answer_maker(_id, message=None):
         if userList[_id].flag == "home":
             keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True)
             keyboard1.row("Активировать магазин", "Удалить магазин")
-            keyboard1.row("Восстановить данные", "Выйти")
+            keyboard1.row("Выйти")
             bot.send_message(_id, "Выбери действие", reply_markup=keyboard1)
             return "wait_choise"
         if userList[_id].flag == "admin_del_shop":
@@ -319,6 +320,7 @@ def addToQueue(id, num_in_shopList = None, shop_id = None):
             if j - 1 == num_in_shopList:
                 print(f"я тут 3 {j} {g_id}")
                 shop_id = g_id
+                break
 
 
     if shop_id in userList[id].myQueue.keys():
@@ -374,7 +376,7 @@ def printShopList(id):
 def getMyPosition(id):
     global  userList, shopList
     if userList[id].myQueue == {}:
-        bot.send_message(id,f"У вас нет записей")
+        bot.send_message(id, f"У вас нет записей")
         userList[id].flag = "home"
         return answer_maker(id, "")
     else:
@@ -402,13 +404,6 @@ def decreaseClients(id, n):
         if id in user_param.myQueue.keys():
             user_param.myQueue[id]-=n
 
-def saveState():
-    global userList, shopList, shopNames
-    f = open('state.txt', 'w')
-    mes = "import telebot\n#bot = telebot.TeleBot('1086481184:AAE0h7NBROzRO7Ke2QmTd7qPOYGy3WTMCM0')\nbot = telebot.TeleBot('1234407671:AAEKcRhsafPOVfIwNRLP1oU69rJ8xly6ZtE')\n"
-    mes = mes + f"shopList = {simplejson.dumps(shopList)}\nuserList = {simplejson.dumps(userList)}\nshopNames ={shopNames}\nquickTalon = {quickTalon}"
-    f.write(mes.replace('true', 'True').replace('false', 'False').replace('null', 'None'))
-    f.close()
 def headQueue(_id,n):
     global  userList, shopList, queue
     mes = ""
@@ -427,7 +422,7 @@ def adminShopList():
     if len(shopList)==0:
         return False
     for shop_id, shop in shopList.items():
-        mes += f"{shop.name}: {shop_id}"
+        mes += f"{shop.name}: {shop_id}\n"
     return mes
 def delShop(id):
     global  userList, shopList, shopNames
@@ -455,10 +450,35 @@ def activeShop(id):
         return True
 
 def newUser(message):
+    print(userList.keys(), message.id, message.id not in userList.keys())
     if message.id not in userList.keys():
-        print(f"Добавлен новый пользлователь {message.id}")
         user = User(message)
         userList[message.id] = user
         userList[message.id].flag = "start"
+def readLineInFile(n):
+     with open('state.txt') as f:
+        for index, line in enumerate(f):
+            if index == n:
+                a = line
+                return a
+def saveState():
+    global userList, shopList, shopNames, quickTalon
 
-# def uploadDataFromFile():
+    f = open(r'state.txt', 'wb')
+    pickle.dump(userList, f)
+    pickle.dump(shopList, f)
+    pickle.dump(shopNames, f)
+    pickle.dump(quickTalon, f)
+    f.close()
+
+def uploadDataFromFile():
+    global userList, shopList, shopNames, quickTalon
+    f = open(r'state.txt', 'rb')
+    if os.stat("state.txt").st_size == 0:
+        return False
+    userList = pickle.load(f)
+    shopList = pickle.load(f)
+    shopNames = pickle.load(f)
+    quickTalon = pickle.load(f)
+    f.close()
+

@@ -15,7 +15,7 @@ class User:
         self.type_user = ''
         self.myQueue = {}
         self.memory = ""
-
+        print(f"\n\nДобавлен новый пользлователь id: {self.id} name:{self.user_login}\n\n")
     def _asdict(self):
         return self.__dict__
     id = ""
