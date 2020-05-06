@@ -15,6 +15,8 @@ class User:
         self.type_user = ''
         self.myQueue = {}
         self.memory = ""
+        self.notification_shop = True
+        self.notification_client = True
         print(f"\n\nДобавлен новый пользлователь id: {self.id} name:{self.user_login}\n\n")
     def __repr__(self):
         return "User id:% s name:% s type:% s flag:% s queue:% s" % (self.id, self.user_login, self.type_user, self.flag, self.myQueue)

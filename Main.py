@@ -3,9 +3,10 @@ from QueueBot.Controller import     send_text_controller, start_message_controll
 from QueueBot.Config import bot
 try:
     uploadDataFromFile()
+    print("Данные восстановленны")
 except Exception as e:
     print("Ошибка восстановления данных")
-
+print("BOT STARTED")
 @bot.message_handler(commands=["help"])
 def help_message(message):
     newUser(message.from_user)
