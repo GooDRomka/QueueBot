@@ -10,7 +10,10 @@ class User:
         elif message.last_name:
             self.user_login = message.last_name
         else:
-             self.user_login = message.id
+            self.user_login = message.id
+        self.first_name =  message.first_name
+        self.first_name = message.username
+        self.last_name = message.last_name
         self.user_login = message.username
         self.type_user = ''
         self.myQueue = {}

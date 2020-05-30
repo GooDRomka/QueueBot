@@ -1,12 +1,18 @@
 
-from QueueBot.Controller import     send_text_controller, start_message_controller, help_message_controller, newUser, uploadDataFromFile
-from QueueBot.Config import bot
+from Controller import send_text_controller, start_message_controller, help_message_controller, newUser, uploadDataFromFile
+from Config import bot
+import logging
+import telebot
+logger = telebot.logger
+telebot.logger.setLevel(logging.INFO)
+
 try:
     uploadDataFromFile()
     print("Данные восстановленны")
 except Exception as e:
     print("Ошибка восстановления данных")
 print("BOT STARTED")
+
 @bot.message_handler(commands=["help"])
 def help_message(message):
     newUser(message.from_user)
